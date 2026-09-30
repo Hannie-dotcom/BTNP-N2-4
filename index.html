@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài tập Ngữ pháp N2 - Bài 4 (Shinkanzen)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+        
+        body {
+            background: linear-gradient(rgba(255, 245, 247, 0.55), rgba(240, 220, 225, 0.65)),
+                        url('https://images.unsplash.com/photo-1522383225653-ed111181a951?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat fixed;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .sakura-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+        .petal {
+            position: absolute;
+            background: #ffb7c5;
+            border-radius: 15px 0 15px 0;
+            opacity: 0.75;
+            filter: drop-shadow(0 2px 4px rgba(216, 90, 127, 0.2));
+            animation: fall linear infinite;
+        }
+        @keyframes fall {
+            0% { transform: translate(0, -10px) rotate(0deg); opacity: 0.8; }
+            100% { transform: translate(120px, 105vh) rotate(360deg); opacity: 0; }
+        }
+
+        .app-card {
+            position: relative;
+            z-index: 2;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            width: 100%;
+            max-width: 600px;
+            border-radius: 24px;
+            padding: 32px 28px;
+            border: 1.5px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 20px 40px rgba(180, 100, 120, 0.15);
+        }
+
+        .lesson-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #d85a7f;
+            margin-bottom: 6px;
+        }
+
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            font-size: 14px; 
+            font-weight: 700; 
+            color: #b06d7e; 
+            margin-bottom: 20px; 
+            padding-bottom: 10px;
+            border-bottom: 1.5px solid #f2d5db;
+        }
+
+        .question-card {
+            background: #fff5f7;
+            border-left: 4px solid #d85a7f;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .question-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #d85a7f;
+            margin-bottom: 8px;
+        }
+
+        .question-text { 
+            font-size: 18px; 
+            font-weight: 600; 
+            color: #3a2e30; 
+            line-height: 1.6;
+        }
+
+        .options-grid { display: flex; flex-direction: column; gap: 12px; }
+        
+        .opt-btn {
+            display: flex;
+            align-items: center;
+            background: #ffffff;
+            border: 1.5px solid #f2d5db;
+            color: #4a383b;
+            padding: 14px 18px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+        }
+
+        .opt-btn::before {
+            content: '';
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #b06d7e;
+            border-radius: 50%;
+            margin-right: 14px;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+
+        .opt-btn:hover { 
+            background: #fff0f3; 
+            border-color: #d85a7f; 
+            transform: translateY(-1px); 
+        }
+
+        .opt-btn.correct { 
+            background: #e8f5e9 !important; 
+            border-color: #66bb6a !important; 
+            color: #2e7d32 !important; 
+        }
+        .opt-btn.correct::before {
+            background: #4caf50;
+            border-color: #4caf50;
+            box-shadow: inset 0 0 0 3px #ffffff;
+        }
+
+        .opt-btn.wrong { 
+            background: #ffebee !important; 
+            border-color: #ef5350 !important; 
+            color: #c62828 !important; 
+        }
+        .opt-btn.wrong::before {
+            background: #ef5350;
+            border-color: #ef5350;
+            box-shadow: inset 0 0 0 3px #ffffff;
+        }
+
+        .feedback { 
+            display: none;
+            margin-top: 20px; 
+            font-size: 15px; 
+            text-align: left;
+        }
+
+        .result-status {
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .explain-card {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1.5px solid #f2d5db;
+            border-radius: 16px;
+            padding: 16px;
+            line-height: 1.6;
+            color: #3a2e30;
+        }
+
+        .explain-item {
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .explain-item:last-child { margin-bottom: 0; }
+
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-right: 6px;
+            color: white;
+        }
+        .tag-grammar { background: #e07a9e; }
+        .tag-trans { background: #5c6bc0; }
+        .tag-meaning { background: #26a69a; }
+
+        .next-btn {
+            display: block;
+            width: 100%;
+            margin-top: 16px;
+            background: linear-gradient(135deg, #e07a9e 0%, #d85a7f 100%);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .next-btn:hover { opacity: 0.95; transform: translateY(-1px); }
+    </style>
+</head>
+<body>
+
+    <div class="sakura-container" id="sakura-box"></div>
+
+    <div class="app-card">
+        <div class="lesson-title">Bài 4 - N2 (Shinkanzen Master)</div>
+
+        <div class="header">
+            <span id="q-count">Câu 1 / 20</span>
+            <span id="score-count">Điểm: 0</span>
+        </div>
+
+        <div class="question-card">
+            <div class="question-title" id="q-type">Câu 1: Chọn đáp án đúng</div>
+            <div class="question-text" id="question-content"></div>
+        </div>
+
+        <div class="options-grid" id="quiz-box">
+            <button class="opt-btn" onclick="checkAnswer(0)"></button>
+            <button class="opt-btn" onclick="checkAnswer(1)"></button>
+            <button class="opt-btn" onclick="checkAnswer(2)"></button>
+        </div>
+
+        <div class="feedback" id="feedback">
+            <div class="result-status" id="result-status"></div>
+            <div class="explain-card">
+                <div class="explain-item"><span class="tag tag-grammar">Cấu trúc</span><span id="ex-grammar"></span></div>
+                <div class="explain-item"><span class="tag tag-meaning">Ý nghĩa</span><span id="ex-meaning"></span></div>
+                <div class="explain-item"><span class="tag tag-trans">Dịch câu</span><span id="ex-trans"></span></div>
+            </div>
+            <button class="next-btn" onclick="nextQuestion()">Câu tiếp theo ➔</button>
+        </div>
+    </div>
+
+    <script>
+        function createPetal() {
+            const box = document.getElementById('sakura-box');
+            const p = document.createElement('div');
+            p.classList.add('petal');
+            p.style.width = Math.random() * 8 + 8 + 'px';
+            p.style.height = Math.random() * 10 + 10 + 'px';
+            p.style.left = Math.random() * 100 + 'vw';
+            p.style.animationDuration = Math.random() * 4 + 6 + 's';
+            box.appendChild(p);
+            setTimeout(() => p.remove(), 10000);
+        }
+        setInterval(createPetal, 400);
+
+        // Toàn bộ 20 câu bài tập Shinkanzen N2 - Bài 4 (Trang 22 - 23)
+        const quizData = [
+            // Mục 1: ～をはじめ（として）
+            {
+                q: '( ) をはじめ、日本の大きい都市には外国からの観光客も多い。',
+                options: ['仙台', '東京', '名古屋'],
+                answer: 1,
+                grammar: 'N + ををはじめ（として）',
+                meaning: 'Đưa ra một đại diện tiêu biểu (sau đó đi kèm với các danh từ số nhiều).',
+                trans: 'Bắt đầu từ Tokyo, tại các thành phố lớn của Nhật Bản cũng có rất nhiều khách du lịch nước ngoài.'
+            },
+            {
+                q: '校長先生をはじめ、( ) には大変お世話になりました。',
+                options: ['学校の先生たち', '佐藤先生', '事務室の人たち'],
+                answer: 0,
+                grammar: 'N + をはじめ（とするN）',
+                meaning: 'Đưa ra đại diện tiêu biểu cho một tập hợp nhóm người/vật phía sau.',
+                trans: 'Tôi đã nhận được sự giúp đỡ rất nhiều từ các thầy cô trong trường, bắt đầu từ thầy hiệu trưởng.'
+            },
+            {
+                q: 'オーストラリアではコアラをはじめ、( ) がいろいろ見られる。',
+                options: ['珍しい動物', 'カンガルーなど', '多くの鳥'],
+                answer: 1,
+                grammar: 'N + ををはじめ',
+                meaning: 'Đưa ra một ví dụ điển hình trong số nhiều ví dụ.',
+                trans: 'Ở Úc có thể ngắm nhìn nhiều loài động vật như chuột túi (kangaroo), bắt đầu từ gấu koala.'
+            },
+            // Mục 2: ～からして
+            {
+                q: 'あのレストランは、( ) からしてわたしは好きになれなかった。',
+                options: ['料理', '食器の色', '味'],
+                answer: 1,
+                grammar: 'N + からして',
+                meaning: 'Ngay từ một chi tiết nhỏ/ví dụ cụ thể đã thế rồi (thường mang đánh giá tiêu cực).',
+                trans: 'Nhà hàng đó ngay từ màu sắc của bát đĩa đã khiến tôi không thể thích nổi rồi.'
+            },
+            {
+                q: '君は選手になるのはまだ無理だなあ。ボールの投げ方からして ( )。',
+                options: ['練習が足りない', '練習をしっかりやろう', '練習をやり直せ'],
+                answer: 0,
+                grammar: 'N + からして + Đánh giá tiêu cực',
+                meaning: 'Vế sau đưa ra nhận xét, đánh giá toàn thể dựa trên ví dụ tiêu biểu.',
+                trans: 'Cậu muốn trở thành cầu thủ thì vẫn chưa được đâu. Ngay từ cách ném bóng đã cho thấy chưa luyện tập đủ rồi.'
+            },
+            {
+                q: '息子は30歳にもなるのに話し方からして ( )。',
+                options: ['おもしろい', '少しうまくなった', 'まだ子供っぽい'],
+                answer: 2,
+                grammar: 'N + からして + Đánh giá chung',
+                meaning: 'Đưa ra một biểu hiện cụ thể để đánh giá bản chất.',
+                trans: 'Con trai tôi dù đã 30 tuổi rồi mà ngay từ cách nói chuyện trông vẫn còn trẻ con.'
+            },
+            {
+                q: 'この服は ( )、色からしてどうもわたしには合いそうもない。',
+                options: ['サイズもデザインも満足だが', '気に入っているのだが', 'デザインはもちろん'],
+                answer: 2,
+                grammar: 'N1 はもちろん N2 からして',
+                meaning: 'Chưa bàn tới N1, ngay từ N2 đã không đạt rồi.',
+                trans: 'Bộ quần áo này thiết kế thì đương nhiên rồi, ngay từ màu sắc đã có vẻ không hợp với tôi rồi.'
+            },
+            // Mục 3: ～にわたって
+            {
+                q: '( ) にわたってこの町には観光客が大勢来た。',
+                options: ['5月', '5月の連休', '1週間'],
+                answer: 1,
+                grammar: 'N (Khoảng thời gian/Phạm vi rộng) + にわたって',
+                meaning: 'Kéo dài suốt một phạm vi không gian, thời gian rộng lớn.',
+                trans: 'Suốt đợt nghỉ lễ tháng 5, khách du lịch đã đến thành phố này rất đông.'
+            },
+            {
+                q: '( ) にわたって花が多い。',
+                options: ['うちの庭', '駅前', 'この県全体'],
+                answer: 2,
+                grammar: 'N (Phạm vi địa lý rộng) + にわたって',
+                meaning: 'Chỉ phạm vi không gian rộng lớn.',
+                trans: 'Suốt toàn bộ tỉnh này hoa nở rất nhiều.'
+            },
+            {
+                q: '日本全国にわたって ( )。',
+                options: ['富士山が一番高い', '数多くの国立公園がある', '四つの大きな島がある'],
+                answer: 1,
+                grammar: 'N + にわたって + Trạng thái trải rộng',
+                meaning: 'Diễn tả hiện tượng/trạng thái lan rộng khắp phạm vi.',
+                trans: 'Trải dài trên khắp toàn quốc Nhật Bản có rất nhiều công viên quốc gia.'
+            },
+            {
+                q: 'うちでは親子2代にわたって ( )。',
+                options: ['魚屋をやっている', '魚屋を開いた', '魚屋を閉じた'],
+                answer: 0,
+                grammar: 'N + にわたって + Hành động/Trạng thái tiếp diễn',
+                meaning: 'Vế sau thể hiện tính liên tục, trải dài.',
+                trans: 'Nhà tôi trải qua 2 thế hệ cha con vẫn đang kinh doanh cửa hàng bán cá.'
+            },
+            // Mục 4: ～を通じて・～を通して
+            {
+                q: 'この高齢者施設では、( ) を通じていろいろ楽しいイベントが行われる。',
+                options: ['四季', '今年', '3時間'],
+                answer: 0,
+                grammar: 'N (Thời gian dài/Xuyên suốt) + を通じて',
+                meaning: 'Xuyên suốt một khoảng thời gian dài.',
+                trans: 'Tại cơ sở chăm sóc người cao tuổi này, nhiều sự kiện thú vị được tổ chức xuyên suốt bốn mùa.'
+            },
+            {
+                q: '( ) を通じて、現地のコンサートの入場券を予約しておいた。',
+                options: ['英語', '電話', '旅行会社'],
+                answer: 2,
+                grammar: 'N (Trung gian/Phương tiện) + を通じて',
+                meaning: 'Thông qua một trung gian/phương tiện để thực hiện điều gì.',
+                trans: 'Tôi đã đặt trước vé vào cửa buổi hòa nhạc tại địa phương thông qua công ty du lịch.'
+            },
+            {
+                q: 'リンさんはこの1年を通して ( )。',
+                options: ['一度も遅刻しなかった', '時々遅刻した', '一度だけ遅刻した'],
+                answer: 0,
+                grammar: 'N + を通して + Trạng thái liên tục không đổi',
+                meaning: 'Xuyên suốt một khoảng thời gian luôn duy trì cùng trạng thái.',
+                trans: 'Lâm trong suốt 1 năm qua chưa từng đi muộn một lần nào.'
+            },
+            {
+                q: '子供たちが書いた作文を通して ( )。',
+                options: ['授業計画を立てた', '子供社会の現状を知った', '非常に感動した'],
+                answer: 1,
+                grammar: 'N + を通して + Nhận thức/Hiểu biết',
+                meaning: 'Thông qua phương tiện trung gian để hiểu rõ/nắm bắt vấn đề.',
+                trans: 'Thông qua bài tập làm văn do các em nhỏ viết, tôi đã hiểu được thực trạng xã hội trẻ em.'
+            },
+            // Mục 5 & 6: ～限り / ～だけ
+            {
+                q: '高山さんは、( ) 限り自分の戦争体験を伝えていきたいと語った。',
+                options: ['命の', '命に', '命'],
+                answer: 0,
+                grammar: 'N の + 限り',
+                meaning: 'Toàn bộ giới hạn/Phạm vi (Đến chừng nào còn...).',
+                trans: 'Anh Takayama tâm sự rằng chừng nào còn sự sống, anh vẫn muốn truyền lại trải nghiệm chiến tranh của mình.'
+            },
+            {
+                q: 'わたしが ( ) 限りのことはもうみんな話した。後は自分で判断しなさい。',
+                options: ['ニュースを見た', '知っている', 'カメラで撮った'],
+                answer: 1,
+                grammar: 'V-ている / 可能動詞 + 限り',
+                meaning: 'Trong toàn bộ phạm vi/giới hạn sự hiểu biết.',
+                trans: 'Tất cả những gì trong phạm vi tôi biết tôi đã nói hết rồi. Sau đó tự mình quyết định đi.'
+            },
+            {
+                q: '映画が好きなので、時間とお金が ( ) 限り見に行っている。',
+                options: ['許す', '許せる', '許した'],
+                answer: 0,
+                grammar: 'V-辞書形 + 限り',
+                meaning: 'Trong phạm vi/giới hạn điều kiện cho phép.',
+                trans: 'Vì thích xem phim nên trong giới hạn thời gian và tiền bạc cho phép, tôi đều đi xem.'
+            },
+            {
+                q: '両手に ( ) だけのみかんをもらって帰った。',
+                options: ['持つ', '持てる', '持てた'],
+                answer: 1,
+                grammar: 'V-可能形 + だけ',
+                meaning: 'Đến mức tối đa giới hạn có thể.',
+                trans: 'Tôi đã nhận cầm về số quýt nhiều nhất có thể bằng cả hai tay.'
+            },
+            // Mục 1~6: Tổng hợp
+            {
+                q: 'ご両親 ( ) 家族の皆さんによろしくお伝えください。',
+                options: ['をはじめ', 'からして', 'を通じて'],
+                answer: 0,
+                grammar: 'N + ををはじめ',
+                meaning: 'Đưa ra đại diện tiêu biểu (Bắt đầu từ...).',
+                trans: 'Cho tôi gửi lời hỏi thăm đến toàn thể gia đình, bắt đầu từ bố mẹ bạn nhé.'
+            }
+        ];
+
+        let current = 0, score = 0, canClick = true;
+
+        function init() {
+            const item = quizData[current];
+            document.getElementById('q-count').innerText = `Câu ${current + 1} / ${quizData.length}`;
+            document.getElementById('score-count').innerText = `Điểm: ${score}`;
+            document.getElementById('q-type').innerText = `Câu ${current + 1}: Chọn đáp án đúng`;
+            document.getElementById('question-content').innerText = item.q;
+            document.getElementById('feedback').style.display = 'none';
+            canClick = true;
+
+            const btns = document.querySelectorAll('.opt-btn');
+            btns.forEach((btn, i) => {
+                btn.innerText = item.options[i];
+                btn.className = 'opt-btn';
+            });
+        }
+
+        function checkAnswer(selectedIndex) {
+            if(!canClick) return; 
+            canClick = false;
+
+            const item = quizData[current];
+            const btns = document.querySelectorAll('.opt-btn');
+            const statusEl = document.getElementById('result-status');
+
+            if(selectedIndex === item.answer) {
+                btns[selectedIndex].classList.add('correct'); 
+                score += 10;
+                statusEl.innerHTML = `<span style="color: #4caf50;">✓ 正解 (Chính xác!)</span>`;
+            } else {
+                btns[selectedIndex].classList.add('wrong');
+                btns[item.answer].classList.add('correct');
+                statusEl.innerHTML = `<span style="color: #ef5350;">✕ ざんねん (Đáp án đúng là: ${item.options[item.answer]})</span>`;
+            }
+
+            document.getElementById('ex-grammar').innerText = item.grammar;
+            document.getElementById('ex-meaning').innerText = item.meaning;
+            document.getElementById('ex-trans').innerText = item.trans;
+
+            document.getElementById('feedback').style.display = 'block';
+        }
+
+        function nextQuestion() {
+            current = (current + 1) % quizData.length;
+            init();
+        }
+
+        init();
+    </script>
+</body>
+</html>
